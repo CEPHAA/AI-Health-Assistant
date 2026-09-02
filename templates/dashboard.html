@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | AI Health Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h2>🏥 AI Health Assistant</h2>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard" class="active">Dashboard</a>
+                <a href="/symptom_checker">Symptom Checker</a>
+                <a href="/chatbot">AI Chatbot</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Welcome back, {{ name }}! 👋</h1>
+                <p>Your personal health dashboard - Track your wellness journey</p>
+            </div>
+
+            {% if prediction_result %}
+            <div class="prediction-result-card">
+                <h2>📊 Latest Health Analysis</h2>
+                <div class="result-details">
+                    <div class="result-item">
+                        <strong>🩺 Detected Condition:</strong>
+                        <span class="disease-name">{{ prediction_result.disease }}</span>
+                    </div>
+                    <div class="result-item">
+                        <strong>⚠️ Severity Level:</strong>
+                        <span class="severity {{ prediction_result.severity.lower() }}">{{ prediction_result.severity }}</span>
+                    </div>
+                    <div class="result-item">
+                        <strong>🎯 Confidence Score:</strong>
+                        <div class="confidence-bar">
+<div class="confidence-fill" data-width="{{ prediction_result.confidence }}"></div>                                {{ prediction_result.confidence }}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <strong>💊 Medical Advice:</strong>
+                        <p class="advice-text">{{ prediction_result.advice }}</p>
+                    </div>
+                    {% if prediction_result.detected_symptoms %}
+                    <div class="result-item">
+                        <strong>🔍 Detected Symptoms:</strong>
+                        <div class="symptom-tags">
+                            {% for symptom in prediction_result.detected_symptoms %}
+                            <span class="detected-symptom">{{ symptom }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>🚀 Quick Actions</h3>
+                    <div class="action-buttons">
+                        <a href="/symptom_checker" class="btn-primary">🔍 Check Symptoms</a>
+                        <a href="/chatbot" class="btn-secondary">💬 Talk to AI Assistant</a>
+                    </div>
+                    <div class="health-tip">
+                        <h4>💡 Health Tip</h4>
+                        <p>Stay hydrated! Drink at least 8 glasses of water daily for optimal health.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📈 Health Analytics</h3>
+                    <canvas id="healthChart" style="max-height: 300px;"></canvas>
+                    <p class="chart-note">Your most common health conditions</p>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <h3>📋 Recent Health Records</h3>
+                <div class="records-table">
+                    {% if records %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Symptoms</th>
+                                <th>Prediction</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td>{{ record[3] }}</td>
+                                <td class="symptoms-cell">{{ record[0] }}</td>
+                                <td><strong>{{ record[1] }}</strong></td>
+                                <td>
+                                    <span class="severity-badge {{ record[2].lower() }}">
+                                        {{ record[2] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if record[2] == 'Mild' %}
+                                    <span class="status-icon">🟢 Good</span>
+                                    {% elif record[2] == 'Moderate' %}
+                                    <span class="status-icon">🟡 Monitor</span>
+                                    {% else %}
+                                    <span class="status-icon">🔴 Action Needed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <p>📭 No health records yet. Try the symptom checker to get started!</p>
+                        <a href="/symptom_checker" class="btn-primary" style="margin-top: 1rem; display: inline-block;">Check Symptoms Now</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="health-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>Total Checkups</h3>
+                        <p class="stat-number">{{ records|length }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <h3>Health Score</h3>
+                        <p class="stat-number">
+                            {% if records|length > 0 %}
+                            {% set mild_count = records|selectattr('2', 'equalto', 'Mild')|list|length %}
+                            {{ (mild_count / records|length * 100)|int }}%
+                            {% else %}
+                            --
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <h3>Last Checkup</h3>
+                        <p class="stat-number">
+                            {% if records %}
+                            {{ records[0][3].split()[0] }}
+                            {% else %}
+                            --
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 AI Health Assistant | Empowering better health decisions with AI</p>
+        </div>
+    </footer>
+
+    <script>
+        // Fetch analytics data for chart
+        fetch('/api/analytics')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('healthChart').getContext('2d');
+                
+                // Check if there's data
+                if (data.data && data.data.length > 0) {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.data.map(item => item[0]),
+                            datasets: [{
+                                label: 'Number of Occurrences',
+                                data: data.data.map(item => item[1]),
+                                backgroundColor: [
+                                    'rgba(46, 204, 113, 0.7)',
+                                    'rgba(52, 152, 219, 0.7)',
+                                    'rgba(155, 89, 182, 0.7)',
+                                    'rgba(241, 196, 15, 0.7)',
+                                    'rgba(231, 76, 60, 0.7)'
+                                ],
+                                borderColor: [
+                                    '#2ecc71',
+                                    '#3498db',
+                                    '#9b59b6',
+                                    '#f1c40f',
+                                    '#e74c3c'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `Count: ${context.parsed.y}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1,
+                                        precision: 0
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Frequency'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Health Conditions'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Show empty chart message
+                    ctx.fillStyle = '#999';
+                    ctx.font = '16px Arial';
+                    ctx.fillText('No data available yet', 50, 150);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching analytics:', error);
+                const ctx = document.getElementById('healthChart').getContext('2d');
+                ctx.fillStyle = '#999';
+                ctx.font = '16px Arial';
+                ctx.fillText('Unable to load chart data', 50, 150);
+            });
+    </script>
+</body>
+</html>

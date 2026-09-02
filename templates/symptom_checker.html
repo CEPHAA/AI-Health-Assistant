@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Checker | AI Health Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h2>🏥 AI Health Assistant</h2>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/symptom_checker" class="active">Symptom Checker</a>
+                <a href="/chatbot">AI Chatbot</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="symptom-checker-card">
+                <h1>AI Symptom Checker</h1>
+                <p>Enter your symptoms below for an AI-powered health analysis</p>
+                
+                <form action="/predict" method="POST" class="symptom-form">
+                    <div class="form-group">
+                        <label for="symptoms">Describe your symptoms:</label>
+                        <textarea 
+                            id="symptoms" 
+                            name="symptoms" 
+                            rows="4" 
+                            placeholder="Example: fever, cough, headache, fatigue, sore throat..."
+                            required
+                        ></textarea>
+                        <small>Separate multiple symptoms with commas</small>
+                    </div>
+                    
+                    <div class="common-symptoms">
+                        <h3>Common Symptoms:</h3>
+                        <div class="symptom-tags">
+                            <span class="symptom-tag" onclick="addSymptom('fever')">Fever</span>
+                            <span class="symptom-tag" onclick="addSymptom('cough')">Cough</span>
+                            <span class="symptom-tag" onclick="addSymptom('headache')">Headache</span>
+                            <span class="symptom-tag" onclick="addSymptom('fatigue')">Fatigue</span>
+                            <span class="symptom-tag" onclick="addSymptom('nausea')">Nausea</span>
+                            <span class="symptom-tag" onclick="addSymptom('sore throat')">Sore Throat</span>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary analyze-btn">Analyze Symptoms</button>
+                </form>
+                
+                <div class="disclaimer">
+                    <p>⚠️ This is an AI-powered tool for informational purposes only. Always consult a healthcare professional for medical advice.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const textarea = document.getElementById('symptoms');
+        
+        function addSymptom(symptom) {
+            let currentValue = textarea.value;
+            if (currentValue) {
+                textarea.value = currentValue + ', ' + symptom;
+            } else {
+                textarea.value = symptom;
+            }
+            textarea.focus();
+        }
+    </script>
+</body>
+</html>
