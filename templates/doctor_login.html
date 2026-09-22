@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login | AI Health Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/themes.css">
+    <link id="theme-stylesheet" rel="stylesheet" href="/static/css/theme-gradient.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .doctor-login-container {
+            max-width: 450px;
+            width: 100%;
+            padding: 2rem;
+        }
+        
+        .doctor-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .doctor-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .doctor-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .demo-credentials {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+    </style>
+<link rel="stylesheet" href="/static/css/theme-unified.css">
+</head>
+<body>
+    <div class="doctor-login-container">
+        <div class="doctor-card">
+            <div class="doctor-header">
+                <div class="doctor-icon">👨‍⚕️</div>
+                <h2>Doctor Portal</h2>
+                <p>Secure access for medical professionals</p>
+            </div>
+            
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST">
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Doctor Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Access Dashboard</button>
+            </form>
+            
+            <div class="demo-credentials">
+                <strong>Demo Doctor Credentials:</strong><br>
+                Email: dr.smith@healthcare.com<br>
+                Password: doctor123
+            </div>
+            
+            <div class="back-link">
+                <a href="/">← Back to Home</a> | <a href="/login">Patient Login</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function changeTheme(themeName) {
+            document.getElementById('theme-stylesheet').href = '/static/css/theme-' + themeName + '.css';
+            localStorage.setItem('selectedTheme', themeName);
+        }
+        
+        const savedTheme = localStorage.getItem('selectedTheme');
+        if (savedTheme) {
+            document.getElementById('theme-stylesheet').href = '/static/css/theme-' + savedTheme + '.css';
+        }
+    </script>
+<script src="/static/js/theme-manager.js"></script>
+</body>
+</html>

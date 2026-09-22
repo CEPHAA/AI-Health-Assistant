@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Analytics | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        .admin-nav { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .admin-nav a { color: white; text-decoration: none; margin-left: 2rem; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .chart-card { background: white; border-radius: 15px; padding: 1.5rem; }
+        .chart-card h3 { margin-bottom: 1rem; color: #2d3748; }
+    </style>
+</head>
+<body>
+    <nav class="admin-nav">
+        <h2><i class="fas fa-chart-line"></i> System Analytics</h2>
+        <div>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/patients">Patients</a>
+            <a href="/admin/doctors">Doctors</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>System Analytics</h1>
+        <p style="margin-bottom: 2rem; color: #718096;">View system statistics and health trends</p>
+        
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> Disease Distribution</h3>
+                <canvas id="diseaseChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-bar"></i> Severity Distribution</h3>
+                <canvas id="severityChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <h3><i class="fas fa-chart-line"></i> Daily Activity (Last 7 Days)</h3>
+            <canvas id="activityChart"></canvas>
+        </div>
+    </div>
+    
+    <script id="analytics-data" type="application/json">
+        {
+            "disease_stats": {{ disease_stats | tojson | safe }},
+            "severity_stats": {{ severity_stats | tojson | safe }},
+            "daily_activity": {{ daily_activity | tojson | safe }}
+        }
+    </script>
+    <script>
+        const analyticsData = JSON.parse(document.getElementById('analytics-data').textContent);
+        // Disease distribution chart
+        const diseaseData = analyticsData.disease_stats;
+        new Chart(document.getElementById('diseaseChart'), {
+            type: 'pie',
+            data: {
+                labels: diseaseData.map(d => d.prediction),
+                datasets: [{
+                    data: diseaseData.map(d => d.count),
+                    backgroundColor: ['#2ecc71', '#3498db', '#9b59b6', '#e74c3c', '#f39c12', '#1abc9c', '#e67e22']
+                }]
+            },
+            options: { responsive: true }
+        });
+        
+        // Severity distribution chart
+        const severityData = analyticsData.severity_stats;
+        new Chart(document.getElementById('severityChart'), {
+            type: 'bar',
+            data: {
+                labels: severityData.map(s => s.severity),
+                datasets: [{
+                    label: 'Number of Cases',
+                    data: severityData.map(s => s.count),
+                    backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c']
+                }]
+            },
+            options: { responsive: true }
+        });
+        
+        // Daily activity chart
+        const activityData = analyticsData.daily_activity;
+        new Chart(document.getElementById('activityChart'), {
+            type: 'line',
+            data: {
+                labels: activityData.map(a => a.day),
+                datasets: [{
+                    label: 'Health Checks',
+                    data: activityData.map(a => a.count),
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52,152,219,0.1)',
+                    fill: true
+                }]
+            },
+            options: { responsive: true }
+        });
+    </script>
+</body>
+</html>

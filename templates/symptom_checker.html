@@ -4,76 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Symptom Checker | AI Health Assistant</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-unified.css') }}">
+    <style>
+        .checker-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        
+        .symptom-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        
+        .symptom-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .symptom-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .symptom-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .symptom-tag {
+            background: #f7fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .symptom-tag:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .analyze-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+        
+        .disclaimer {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #e74c3c;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="container">
+        <div class="nav-content">
             <div class="logo">
                 <h2>🏥 AI Health Assistant</h2>
             </div>
             <div class="nav-links">
                 <a href="/dashboard">Dashboard</a>
-                <a href="/symptom_checker" class="active">Symptom Checker</a>
+                <a href="/symptom_checker">Symptom Checker</a>
                 <a href="/chatbot">AI Chatbot</a>
                 <a href="/logout">Logout</a>
             </div>
         </div>
     </nav>
 
-    <main>
-        <div class="container">
-            <div class="symptom-checker-card">
-                <h1>AI Symptom Checker</h1>
-                <p>Enter your symptoms below for an AI-powered health analysis</p>
+    <div class="checker-container">
+        <div class="symptom-card">
+            <h1>🔍 AI Symptom Checker</h1>
+            <p>Describe your symptoms for AI-powered analysis</p>
+            
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <form action="/predict" method="POST">
+                <textarea 
+                    name="symptoms" 
+                    class="symptom-input" 
+                    rows="5" 
+                    placeholder="Example: fever, cough, headache, fatigue..."
+                    required
+                ></textarea>
                 
-                <form action="/predict" method="POST" class="symptom-form">
-                    <div class="form-group">
-                        <label for="symptoms">Describe your symptoms:</label>
-                        <textarea 
-                            id="symptoms" 
-                            name="symptoms" 
-                            rows="4" 
-                            placeholder="Example: fever, cough, headache, fatigue, sore throat..."
-                            required
-                        ></textarea>
-                        <small>Separate multiple symptoms with commas</small>
-                    </div>
-                    
-                    <div class="common-symptoms">
-                        <h3>Common Symptoms:</h3>
-                        <div class="symptom-tags">
-                            <span class="symptom-tag" onclick="addSymptom('fever')">Fever</span>
-                            <span class="symptom-tag" onclick="addSymptom('cough')">Cough</span>
-                            <span class="symptom-tag" onclick="addSymptom('headache')">Headache</span>
-                            <span class="symptom-tag" onclick="addSymptom('fatigue')">Fatigue</span>
-                            <span class="symptom-tag" onclick="addSymptom('nausea')">Nausea</span>
-                            <span class="symptom-tag" onclick="addSymptom('sore throat')">Sore Throat</span>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn-primary analyze-btn">Analyze Symptoms</button>
-                </form>
-                
-                <div class="disclaimer">
-                    <p>⚠️ This is an AI-powered tool for informational purposes only. Always consult a healthcare professional for medical advice.</p>
+                <div class="symptom-tags">
+                    <span class="symptom-tag" onclick="addSymptom('fever')">🔥 Fever</span>
+                    <span class="symptom-tag" onclick="addSymptom('cough')">😷 Cough</span>
+                    <span class="symptom-tag" onclick="addSymptom('headache')">🤕 Headache</span>
+                    <span class="symptom-tag" onclick="addSymptom('fatigue')">😴 Fatigue</span>
+                    <span class="symptom-tag" onclick="addSymptom('nausea')">🤢 Nausea</span>
+                    <span class="symptom-tag" onclick="addSymptom('sore throat')">🗣️ Sore Throat</span>
                 </div>
+                
+                <button type="submit" class="btn-primary analyze-btn">🚀 Analyze Symptoms</button>
+            </form>
+            
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This AI tool provides informational guidance only. 
+                Not a substitute for professional medical advice.
             </div>
         </div>
-    </main>
+    </div>
 
     <script>
-        const textarea = document.getElementById('symptoms');
-        
         function addSymptom(symptom) {
-            let currentValue = textarea.value;
-            if (currentValue) {
-                textarea.value = currentValue + ', ' + symptom;
-            } else {
+            const textarea = document.querySelector('textarea[name="symptoms"]');
+            let current = textarea.value;
+            if (current.trim() === '') {
                 textarea.value = symptom;
+            } else {
+                textarea.value = current + ', ' + symptom;
             }
             textarea.focus();
         }
     </script>
+    <script src="{{ url_for('static', filename='js/theme-manager.js') }}"></script>
 </body>
 </html>

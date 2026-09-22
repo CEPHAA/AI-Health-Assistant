@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+*.egg-info/
+build/
+dist/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Database (DO NOT COMMIT)
+*.db
+*.sqlite
+*.sqlite3
+database.db
+database.db-journal
+database.db-wal
+database.db-shm
+
+# Environment Variables
+.env
+.env.local
+.flaskenv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Backups
+backups/
+*.bak
+*.backup
+app.py.backup
+app.py.backup_*
+
+# Temporary files
+*.tmp
+tmp/
+temp/
+cookies.txt
+
+# Scripts (optional - remove if you want them tracked)
+diagnose_admin.sh
+view_doctors.sh
+view_patients.sh
+view_prescriptions.sh
+test_*.sh
+check_*.sh
+
+# Secrets
+secrets.txt
+credentials.txt
+admin_credentials.txt

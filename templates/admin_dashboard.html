@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | AI Health Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/theme-unified.css">
+    <link rel="stylesheet" href="/static/css/admin-common.css">
+</head>
+<body>
+    {% include 'includes/admin_nav.html' %}
+    
+    <div class="admin-container">
+        <div class="admin-page-header">
+            <div>
+                <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+                <p>Welcome back, {{ name }}! System overview</p>
+            </div>
+        </div>
+        
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">{{ total_patients }}</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">👨‍⚕️</div>
+                <div class="stat-number">{{ total_doctors }}</div>
+                <div class="stat-label">Total Doctors</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-number">{{ total_records }}</div>
+                <div class="stat-label">Health Records</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-number">{{ total_chats }}</div>
+                <div class="stat-label">Chat Messages</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">💊</div>
+                <div class="stat-number">{{ total_prescriptions }}</div>
+                <div class="stat-label">Prescriptions</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">{{ total_reviews }}</div>
+                <div class="stat-label">Doctor Reviews</div>
+            </div>
+        </div>
+        
+        <div class="admin-page-header" style="display: block;">
+            <h1 style="margin-bottom: 1rem;"><i class="fas fa-bolt"></i> Quick Actions</h1>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                <a href="/admin/users" class="admin-btn admin-btn-primary" style="padding: 1rem; justify-content: center;">
+                    <i class="fas fa-users-cog"></i> Manage Users
+                </a>
+                <a href="/admin/health-records" class="admin-btn admin-btn-primary" style="padding: 1rem; justify-content: center;">
+                    <i class="fas fa-file-medical-alt"></i> Health Records
+                </a>
+                <a href="/admin/chat-messages" class="admin-btn admin-btn-primary" style="padding: 1rem; justify-content: center;">
+                    <i class="fas fa-comment-dots"></i> Chat Messages
+                </a>
+                <a href="/admin/change-password" class="admin-btn admin-btn-primary" style="padding: 1rem; justify-content: center;">
+                    <i class="fas fa-key"></i> Change Password
+                </a>
+            </div>
+        </div>
+        
+        <div class="admin-table-container">
+            <div style="padding: 1.5rem;">
+                <h3 style="color: #2d3748; margin-bottom: 1rem;"><i class="fas fa-clock"></i> Recent User Registrations</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Type</th>
+                            <th>Registered</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recent_users %}
+                        <tr>
+                            <td><strong>{{ user.name }}</strong></td>
+                            <td>{{ user.email }}</td>
+                            <td><span class="admin-badge admin-badge-role-{{ user.user_type }}">{{ user.user_type }}</span></td>
+                            <td>{{ user.created_at[:10] if user.created_at else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/theme-manager.js"></script>
+</body>
+</html>

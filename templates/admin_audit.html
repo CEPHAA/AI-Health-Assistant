@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        .admin-nav { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .admin-nav a { color: white; text-decoration: none; margin-left: 2rem; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .card { background: white; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f7fafc; color: #4a5568; }
+        .log-type { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 5px; font-size: 0.8rem; }
+        .log-role { background: #3498db; color: white; }
+        .log-access { background: #9b59b6; color: white; }
+        .log-delete { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="admin-nav">
+        <h2><i class="fas fa-history"></i> Audit Logs</h2>
+        <div>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/roles">Roles</a>
+            <a href="/admin/patients">Patients</a>
+            <a href="/admin/doctors">Doctors</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>System Audit Logs</h1>
+        <p style="margin-bottom: 2rem;">Track all permission changes and data access</p>
+        
+        <div class="card">
+            <h3><i class="fas fa-exchange-alt"></i> Permission Change Logs</h3>
+            <table id="permissionLogs">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Admin</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Old Role</th>
+                        <th>New Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamically loaded -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-eye"></i> Data Access Logs</h3>
+            <table id="accessLogs">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Accessed By</th>
+                        <th>Target User</th>
+                        <th>Access Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamically loaded -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Load permission logs
+        fetch('/api/admin/permission-logs')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#permissionLogs tbody');
+                data.forEach(log => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${log.timestamp}</td>
+                            <td>${log.admin_name}</td>
+                            <td>${log.user_name}</td>
+                            <td><span class="log-type log-${log.action}">${log.action}</span></td>
+                            <td>${log.old_role || '-'}</td>
+                            <td>${log.new_role || '-'}</td>
+                        </tr>
+                    `;
+                });
+            });
+        
+        // Load access logs
+        fetch('/api/admin/access-logs')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#accessLogs tbody');
+                data.forEach(log => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${log.timestamp}</td>
+                            <td>${log.accessed_by_name}</td>
+                            <td>${log.user_name}</td>
+                            <td><span class="log-type">${log.access_type}</span></td>
+                        </tr>
+                    `;
+                });
+            });
+    </script>
+</body>
+</html>

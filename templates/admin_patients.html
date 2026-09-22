@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Patients</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        .navbar { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; }
+        .navbar a { color: white; text-decoration: none; margin-left: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        table { width: 100%; background: white; border-radius: 10px; overflow: hidden; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f7fafc; }
+        .active { color: green; }
+        .inactive { color: red; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Manage Patients</h2>
+        <div><a href="/admin/dashboard">Back</a><a href="/logout">Logout</a></div>
+    </nav>
+    <div class="container">
+        <h1>Patient List</h1>
+        <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Registered</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.id }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.email }}</td>
+                    <td>{{ patient.created_at[:10] if patient.created_at else 'N/A' }}</td>
+                    <td class="{{ 'active' if patient.is_active else 'inactive' }}">{{ 'Active' if patient.is_active else 'Inactive' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}AI Health Assistant{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-unified.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <h2>🏥 AI Health Assistant</h2>
+            </div>
+            <div class="nav-links">
+                {% block nav_links %}
+                <a href="/">Home</a>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+                {% endblock %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; margin-top: 2rem; background: var(--footer-bg); color: var(--footer-text);">
+        <div class="container">
+            <p>&copy; 2024 AI Health Assistant. Empowering better health decisions with AI.</p>
+        </div>
+    </footer>
+
+    <!-- Theme Switcher JavaScript -->
+    <script src="{{ url_for('static', filename='js/theme-manager.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

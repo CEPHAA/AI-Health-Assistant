@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Records | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/theme-unified.css">
+    <link rel="stylesheet" href="/static/css/admin-common.css">
+</head>
+<body>
+    {% include 'includes/admin_nav.html' %}
+    
+    <div class="admin-container">
+        <div class="admin-page-header">
+            <div>
+                <h1><i class="fas fa-file-medical-alt"></i> All Health Records</h1>
+                <p>View and analyze all AI-generated health predictions</p>
+            </div>
+        </div>
+        
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-number">{{ total_records }}</div>
+                <div class="stat-label">Total Records</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">🟢</div>
+                <div class="stat-number" style="color: #2ecc71;">{{ severity_stats.get('Mild', 0) }}</div>
+                <div class="stat-label">Mild</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">🟡</div>
+                <div class="stat-number" style="color: #f39c12;">{{ severity_stats.get('Moderate', 0) }}</div>
+                <div class="stat-label">Moderate</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="stat-icon">🔴</div>
+                <div class="stat-number" style="color: #e74c3c;">{{ severity_stats.get('Severe', 0) }}</div>
+                <div class="stat-label">Severe</div>
+            </div>
+        </div>
+        
+        <form method="GET" class="admin-filter-bar">
+            <label><i class="fas fa-filter"></i> Filter:</label>
+            <select name="severity" onchange="this.form.submit()">
+                <option value="all" {% if current_severity == 'all' %}selected{% endif %}>All Severity</option>
+                <option value="Mild" {% if current_severity == 'Mild' %}selected{% endif %}>🟢 Mild</option>
+                <option value="Moderate" {% if current_severity == 'Moderate' %}selected{% endif %}>🟡 Moderate</option>
+                <option value="Severe" {% if current_severity == 'Severe' %}selected{% endif %}>🔴 Severe</option>
+            </select>
+            
+            <select name="patient_id" onchange="this.form.submit()">
+                <option value="">All Patients</option>
+                {% for patient in patients %}
+                <option value="{{ patient.id }}" {% if current_patient|string == patient.id|string %}selected{% endif %}>{{ patient.name }}</option>
+                {% endfor %}
+            </select>
+            
+            <a href="/admin/health-records" class="admin-btn admin-btn-primary">
+                <i class="fas fa-redo"></i> Reset
+            </a>
+        </form>
+        
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Patient</th>
+                        <th>Symptoms</th>
+                        <th>Prediction</th>
+                        <th>Severity</th>
+                        <th>Confidence</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.formatted_date }}</td>
+                        <td><strong>{{ record.patient_name }}</strong><br><small>{{ record.patient_email }}</small></td>
+                        <td>{{ record.symptoms[:60] }}{% if record.symptoms|length > 60 %}...{% endif %}</td>
+                        <td>{{ record.prediction }}</td>
+                        <td><span class="admin-badge admin-badge-{{ record.severity.lower() }}">{{ record.severity }}</span></td>
+                        <td>{{ record.confidence }}%</td>
+                        <td>
+                            <button class="admin-btn admin-btn-primary admin-btn-sm" onclick="viewRecord({{ record.id }})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 3rem; color: #718096;">
+                            <i class="fas fa-inbox" style="font-size: 2rem;"></i>
+                            <p style="margin-top: 0.5rem;">No records found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- View Record Modal -->
+    <div class="admin-modal" id="viewModal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h3><i class="fas fa-file-medical"></i> Record Details</h3>
+                <button class="admin-modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="recordDetails"></div>
+        </div>
+    </div>
+    
+    <script>
+        function viewRecord(recordId) {
+            fetch(`/api/admin/health-record/${recordId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('recordDetails').innerHTML = `
+                        <div style="line-height: 1.8;">
+                            <p><strong>Patient:</strong> ${data.patient_name}</p>
+                            <p><strong>Email:</strong> ${data.patient_email}</p>
+                            <p><strong>Date:</strong> ${data.date}</p>
+                            <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e2e8f0;">
+                            <p><strong>Symptoms:</strong></p>
+                            <p style="background: #f7fafc; padding: 1rem; border-radius: 8px;">${data.symptoms}</p>
+                            <p><strong>AI Prediction:</strong> <span style="color: #1e3c72; font-weight: 600;">${data.prediction}</span></p>
+                            <p><strong>Severity:</strong> <span class="admin-badge admin-badge-${data.severity.toLowerCase()}">${data.severity}</span></p>
+                            <p><strong>Confidence:</strong> ${data.confidence}%</p>
+                            <p><strong>AI Advice:</strong></p>
+                            <p style="background: #f7fafc; padding: 1rem; border-radius: 8px;">${data.advice || 'N/A'}</p>
+                        </div>
+                    `;
+                    document.getElementById('viewModal').classList.add('show');
+                });
+        }
+        
+        function closeModal() {
+            document.getElementById('viewModal').classList.remove('show');
+        }
+        
+        document.getElementById('viewModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+    
+    <script src="/static/js/theme-manager.js"></script>
+</body>
+</html>

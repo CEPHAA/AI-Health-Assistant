@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | AI Health Assistant</title>
+    <title>Admin Login | AI Health Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/theme-unified.css">
@@ -20,6 +20,7 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
         }
         
         .card {
@@ -28,7 +29,7 @@
             background: white;
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         
         .header {
@@ -42,7 +43,7 @@
         }
         
         .header h2 {
-            color: #2d3748;
+            color: #1e3c72;
             margin-bottom: 0.5rem;
         }
         
@@ -68,15 +69,13 @@
             border: 2px solid #e2e8f0;
             border-radius: 10px;
             font-size: 1rem;
-            transition: border-color 0.3s;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1e3c72;
         }
         
-        /* Password Input with Eye Icon */
         .password-input-wrapper {
             position: relative;
         }
@@ -96,34 +95,15 @@
             color: #718096;
             font-size: 1.1rem;
             padding: 5px;
-            transition: color 0.3s;
         }
         
         .password-toggle:hover {
-            color: #667eea;
-        }
-        
-        /* Forgot Password Link */
-        .forgot-password {
-            text-align: right;
-            margin-top: -0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .forgot-password a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .forgot-password a:hover {
-            text-decoration: underline;
+            color: #1e3c72;
         }
         
         .btn-primary {
             width: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             padding: 0.75rem;
             border: none;
@@ -151,12 +131,6 @@
             border: 1px solid #fc8181;
         }
         
-        .success {
-            background: #e6fffa;
-            color: #234e52;
-            border: 1px solid #4fd1c5;
-        }
-        
         .footer {
             text-align: center;
             margin-top: 1.5rem;
@@ -165,58 +139,48 @@
         }
         
         .footer a {
-            color: #667eea;
+            color: #1e3c72;
             text-decoration: none;
-            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="header">
-            <div class="icon">🔐</div>
-            <h2>Welcome Back</h2>
-            <p>Login to your health dashboard</p>
+            <div class="icon">👨‍💼</div>
+            <h2>Admin Portal</h2>
+            <p>System Administrator Access</p>
         </div>
         
         {% if error %}
         <div class="message error">{{ error }}</div>
         {% endif %}
         
-        {% if success %}
-        <div class="message success">{{ success }}</div>
-        {% endif %}
-        
         <form method="POST">
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">Admin Email</label>
                 <input type="email" id="email" name="email" 
-                       placeholder="your.email@example.com" required
-                       value="{{ request.form.get('email', '') }}">
+                       placeholder="admin@healthcare.com" required>
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="password-input-wrapper">
                     <input type="password" id="password" name="password" 
-                           placeholder="Enter your password" required>
+                           placeholder="Enter password" required>
                     <button type="button" class="password-toggle" onclick="togglePassword('password')">
                         <i class="fas fa-eye" id="password-icon"></i>
                     </button>
                 </div>
             </div>
             
-            <div class="forgot-password">
-                <a href="/forgot-password">Forgot Password?</a>
-            </div>
-            
             <button type="submit" class="btn-primary">
-                <i class="fas fa-sign-in-alt"></i> Login
+                <i class="fas fa-lock"></i> Access Dashboard
             </button>
         </form>
         
         <div class="footer">
-            Don't have an account? <a href="/register">Register here</a>
+            <a href="/">← Back to Home</a>
         </div>
     </div>
     
